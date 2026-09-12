@@ -16,9 +16,12 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var defaultConnection =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? $"Data Source={Path.Combine(builder.Environment.ContentRootPath, "securecheck.db")}";
+
 builder.Services.AddDbContext<SecureCheckDbContext>(options =>
-    options.UseSqlite(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(defaultConnection));
 
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 builder.Services.AddScoped<IQrCodeService, QrCodeService>();
@@ -66,3 +69,5 @@ app.UseCors("InvigilatorClient");
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

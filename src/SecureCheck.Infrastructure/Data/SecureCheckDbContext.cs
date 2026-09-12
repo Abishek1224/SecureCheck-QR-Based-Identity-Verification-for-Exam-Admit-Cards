@@ -21,5 +21,11 @@ public class SecureCheckDbContext : DbContext
         modelBuilder.Entity<ExamRegistration>()
             .HasIndex(r => r.QrCodeToken)
             .IsUnique();
+
+        modelBuilder.Entity<VerificationLog>()
+            .HasOne<ExamRegistration>()
+            .WithMany(r => r.VerificationLogs)
+            .HasForeignKey(v => v.RegistrationId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
