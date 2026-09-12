@@ -69,14 +69,14 @@ dotnet run --project src/SecureCheck.Api
 dotnet run --project src/SecureCheck.InvigilatorClient
 ```
 
-The database (`securecheck.db`, SQLite) and generated admit-card PDFs
-(`src/SecureCheck.Api/AdmitCards/`) are created automatically on first run —
-no migrations have been added yet (see Next steps).
+The SQLite database (`securecheck.db`) is created automatically on first run in
+`src/SecureCheck.Api/`, and EF Core startup migration is applied automatically.
+Generated admit-card PDFs are saved under `src/SecureCheck.Api/wwwroot/admitcards/`.
 
 ## Next steps for the team
 
-1. **EF Core migrations** — run `dotnet ef migrations add InitialCreate` from
-   `SecureCheck.Api` (needs `dotnet-ef` tool installed) once the schema feels stable.
+1. **EF Core migrations** — run `dotnet ef migrations add <Name>` from
+   `SecureCheck.Api` (needs `dotnet-ef` tool installed) when schema changes are made.
 2. **Invigilator device authentication** — the `TODO` in `Program.cs` and
    `VerificationController.cs`. Decide between a per-device API key or a JWT
    issued at login, per the proposal's "restricted to authorized invigilator
