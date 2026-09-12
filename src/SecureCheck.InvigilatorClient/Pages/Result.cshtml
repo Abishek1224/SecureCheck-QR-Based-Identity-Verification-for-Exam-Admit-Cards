@@ -1,0 +1,18 @@
+@page
+@model SecureCheck.InvigilatorClient.Pages.ResultModel
+
+@{
+    ViewData["Title"] = "Verification Result";
+}
+
+<link rel="stylesheet" href="~/css/site.css" />
+
+<h1>Candidate Verification</h1>
+
+<div id="result-card">
+    <p>Waiting for verification...</p>
+</div>
+
+<a href="/Scan">Scan Another Candidate</a>
+
+<script src="~/js/result.js"></script>

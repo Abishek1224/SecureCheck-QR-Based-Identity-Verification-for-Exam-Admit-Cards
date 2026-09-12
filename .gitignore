@@ -1,0 +1,24 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+
+## Build output
+[Dd]ebug/
+[Rr]elease/
+
+## Runtime artifacts specific to this project
+src/SecureCheck.Api/AdmitCards/
+*.db
+*.db-shm
+*.db-wal
+
+## IDE
+.vs/
+.vscode/
+*.swp
+
+## OS
+.DS_Store
+Thumbs.db

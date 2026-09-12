@@ -1,0 +1,17 @@
+@page
+@model SecureCheck.InvigilatorClient.Pages.ScanModel
+@{
+    ViewData["Title"] = "Scan Admit Card";
+}
+
+<link rel="stylesheet" href="~/css/site.css" />
+
+<h1>Scan Candidate's QR Code</h1>
+<p>Point the camera at the QR code on the admit card.</p>
+
+<div id="qr-reader" style="width: 320px;"></div>
+<div id="scan-status"></div>
+
+<!-- Lightweight browser QR reader - swap for another library if the team prefers -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script src="~/js/scanner.js"></script>
