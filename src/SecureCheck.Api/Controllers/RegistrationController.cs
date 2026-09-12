@@ -1,10 +1,8 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SecureCheck.Core.DTOs;
 using SecureCheck.Core.Entities;
 using SecureCheck.Core.Interfaces;
-using SecureCheck.Infrastructure.Data;
 
 namespace SecureCheck.Api.Controllers;
 
@@ -12,15 +10,21 @@ namespace SecureCheck.Api.Controllers;
 [Route("api/registration")]
 public class RegistrationController : ControllerBase
 {
-    private readonly SecureCheckDbContext _context;
+    private readonly IRegistrationRepository _repository;
     private readonly IQrCodeService _qrCodeService;
+    private readonly IAdmitCardService _admitCardService;
+    private readonly IWebHostEnvironment _environment;
 
     public RegistrationController(
-        SecureCheckDbContext context,
-        IQrCodeService qrCodeService)
+        IRegistrationRepository repository,
+        IQrCodeService qrCodeService,
+        IAdmitCardService admitCardService,
+        IWebHostEnvironment environment)
     {
-        _context = context;
+        _repository = repository;
         _qrCodeService = qrCodeService;
+        _admitCardService = admitCardService;
+        _environment = environment;
     }
 
     [HttpPost]
@@ -41,8 +45,7 @@ public class RegistrationController : ControllerBase
         }
 
         // Check whether roll number is already registered
-        var existingStudent = await _context.Students
-            .FirstOrDefaultAsync(s => s.RollNumber == request.RollNumber);
+        var existingStudent = await _repository.GetByRollNumberAsync(request.RollNumber);
 
         if (existingStudent != null)
         {
@@ -78,11 +81,7 @@ public class RegistrationController : ControllerBase
             IsActive = true
         };
 
-        // Save student and registration
-        _context.Students.Add(student);
-        _context.Registrations.Add(registration);
-
-        await _context.SaveChangesAsync();
+        await _repository.AddAsync(student, registration);
 
         // Create verification URL
         var verificationUrl =
@@ -93,10 +92,7 @@ public class RegistrationController : ControllerBase
         var qrBytes = _qrCodeService.GenerateQrCode(verificationUrl);
 
         // Create QR code folder
-        var qrFolder = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "wwwroot",
-            "qrcodes");
+        var qrFolder = Path.Combine(_environment.WebRootPath, "qrcodes");
 
         Directory.CreateDirectory(qrFolder);
 
@@ -106,9 +102,14 @@ public class RegistrationController : ControllerBase
 
         await System.IO.File.WriteAllBytesAsync(qrFilePath, qrBytes);
 
+        await _admitCardService.GenerateAdmitCardAsync(student, registration, qrBytes);
+        await _repository.SaveChangesAsync();
+
         // URL that can be used to display the QR image
         var qrCodeUrl =
             $"{Request.Scheme}://{Request.Host}/qrcodes/{qrFileName}";
+        var admitCardUrl =
+            $"{Request.Scheme}://{Request.Host}/admitcards/{registration.Id}.pdf";
 
         return Ok(new RegistrationResponseDto
         {
@@ -119,6 +120,7 @@ public class RegistrationController : ControllerBase
             ExamDateUtc = registration.ExamDateUtc,
             SeatNumber = registration.SeatNumber,
             QrCodeUrl = qrCodeUrl,
+            AdmitCardUrl = admitCardUrl,
             Message = "Student registered successfully."
         });
     }

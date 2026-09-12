@@ -1,5 +1,6 @@
 @page
 @model SecureCheck.InvigilatorClient.Pages.ResultModel
+@inject IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Verification Result";
@@ -12,6 +13,10 @@
 <div id="result-card">
     <p>Waiting for verification...</p>
 </div>
+
+<div id="api-config"
+     data-base-url="@Configuration["SecureCheckApi:BaseUrl"]"
+     data-api-key="@Configuration["SecureCheckApi:ApiKey"]"></div>
 
 <a href="/Scan">Scan Another Candidate</a>
 

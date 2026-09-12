@@ -116,6 +116,8 @@ namespace SecureCheck.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RegistrationId");
+
                     b.ToTable("VerificationLogs");
                 });
 
@@ -130,9 +132,23 @@ namespace SecureCheck.Infrastructure.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("SecureCheck.Core.Entities.VerificationLog", b =>
+                {
+                    b.HasOne("SecureCheck.Core.Entities.ExamRegistration", null)
+                        .WithMany("VerificationLogs")
+                        .HasForeignKey("RegistrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SecureCheck.Core.Entities.Student", b =>
                 {
                     b.Navigation("Registration");
+                });
+
+            modelBuilder.Entity("SecureCheck.Core.Entities.ExamRegistration", b =>
+                {
+                    b.Navigation("VerificationLogs");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,4 +15,5 @@ public class ExamRegistration
     public string? AdmitCardPdfPath { get; set; }
 
     public bool IsActive { get; set; } = true; // lets a card be revoked without deleting history
+    public ICollection<VerificationLog> VerificationLogs { get; set; } = new List<VerificationLog>();
 }
